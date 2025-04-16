@@ -3,7 +3,7 @@ pipeline {
     
     environment {
         NODE_VERSION = '20.11.1'  // Specify the Node.js version you want to use
-        PATH = "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:${env.PATH}"
+        NVM_DIR = "${env.HOME}/.nvm"
     }
 
     stages {
@@ -16,16 +16,18 @@ pipeline {
         stage('Setup Node.js') {
             steps {
                 sh '''
-                    # Check if Homebrew is installed
-                    which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+                    # Install nvm if not already installed
+                    if [ ! -d "$HOME/.nvm" ]; then
+                        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+                    fi
                     
-                    # Update Homebrew and install Node.js
-                    brew update
-                    brew install node@20 || brew upgrade node@20
+                    # Load nvm
+                    export NVM_DIR="$HOME/.nvm"
+                    [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
                     
-                    # Add node to PATH if needed
-                    echo 'export PATH="/usr/local/opt/node@20/bin:$PATH"' >> ~/.bash_profile
-                    source ~/.bash_profile
+                    # Install Node.js
+                    nvm install ${NODE_VERSION}
+                    nvm use ${NODE_VERSION}
                     
                     # Verify installation
                     node -v
@@ -36,13 +38,27 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                sh '''
+                    # Load nvm and use the installed Node.js version
+                    export NVM_DIR="$HOME/.nvm"
+                    [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+                    nvm use ${NODE_VERSION}
+                    
+                    npm install
+                '''
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh 'npm run test || true'  // Continue even if tests fail
+                sh '''
+                    # Load nvm and use the installed Node.js version
+                    export NVM_DIR="$HOME/.nvm"
+                    [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+                    nvm use ${NODE_VERSION}
+                    
+                    npm run test || true
+                '''
             }
         }
 
