@@ -1,8 +1,9 @@
 pipeline {
-    agent any
-
-    tools {
-        nodejs 'nodejs'  // Make sure this NodeJS installation is configured in Jenkins
+    agent {
+        docker {
+            image 'node:20-alpine'  // Using lightweight Alpine-based Node.js image
+            args '-v $HOME/.npm:/root/.npm'  // Cache npm packages
+        }
     }
 
     stages {
