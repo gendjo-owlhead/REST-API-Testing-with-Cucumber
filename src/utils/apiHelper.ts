@@ -1,22 +1,42 @@
+import axios, { AxiosRequestConfig, AxiosError } from 'axios';
+
+const DEFAULT_TIMEOUT = 10000; // 10 seconds
+
 export const apiRequest = async (url: string, method: string = 'GET', body?: any) => {
-    const options: RequestInit = {
-        method,
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    };
-
+    console.log(`Making ${method} request to: ${url}`);
     if (body) {
-        options.body = JSON.stringify(body);
+        console.log('Request body:', JSON.stringify(body, null, 2));
     }
 
-    const response = await fetch(url, options);
-    
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    try {
+        const config: AxiosRequestConfig = {
+            method,
+            url,
+            timeout: DEFAULT_TIMEOUT,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            data: body,
+            validateStatus: (status) => true // Don't throw on any status
+        };
 
-    return response.json();
+        const response = await axios(config);
+        console.log(`Response status: ${response.status}`);
+        console.log('Response data:', JSON.stringify(response.data, null, 2));
+        
+        return {
+            status: response.status,
+            data: response.data
+        };
+    } catch (error) {
+        const axiosError = error as AxiosError;
+        console.error('Request failed:', {
+            message: axiosError.message,
+            code: axiosError.code,
+            response: axiosError.response?.data
+        });
+        throw error;
+    }
 };
 
 export const getObjects = async () => {

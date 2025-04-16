@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "pretest": "rm -rf reports && mkdir -p reports/json",
-    "test": "cucumber-js --format json:reports/json/cucumber-report.json --format summary --require-module ts-node/register --require 'src/features/step_definitions/**/*.ts' 'src/features/**/*.feature'",
-    "posttest": "ts-node src/reports/generate-report.ts && open reports/html/index.html"
+    "test": "cucumber-js --format json:reports/json/cucumber-report.json --format summary --require-module ts-node/register --require \"src/features/step_definitions/**/*.ts\" \"src/features/**/*.feature\"",
+    "posttest": "cd src/reports && ts-node generate-report.ts && open ../../reports/html/index.html"
   },
   "dependencies": {
     "@cucumber/cucumber": "^9.5.1",

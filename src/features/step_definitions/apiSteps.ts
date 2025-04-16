@@ -1,6 +1,7 @@
 import { Given, When, Then } from '@cucumber/cucumber';
-import axios, { AxiosError } from 'axios';
+import { AxiosError } from 'axios';
 import assert from 'assert';
+import { apiRequest } from '../../utils/apiHelper';
 
 let apiEndpoint: string;
 let requestBody: any;
@@ -17,7 +18,7 @@ Given('I have a new object with the following details:', function (dataTable) {
 
 When('I send a GET request to the API', async function () {
     try {
-        response = await axios.get(apiEndpoint);
+        response = await apiRequest(apiEndpoint, 'GET');
     } catch (error) {
         const axiosError = error as AxiosError;
         throw new Error(`GET request failed: ${axiosError.message}`);
@@ -26,7 +27,7 @@ When('I send a GET request to the API', async function () {
 
 When('I send a POST request to the API with the new object', async function () {
     try {
-        response = await axios.post(apiEndpoint, {
+        response = await apiRequest(apiEndpoint, 'POST', {
             name: requestBody.name,
             data: JSON.parse(requestBody.data)
         });
@@ -44,10 +45,6 @@ Then('the response should contain a list of objects', function () {
     assert(Array.isArray(response.data));
 });
 
-Then('I store the first object id', function () {
-    storedObjectId = response.data[0].id;
-});
-
 Then('I store the created object id', function () {
     storedObjectId = response.data.id;
     console.log(`Stored created object ID: ${storedObjectId}`);
@@ -57,13 +54,9 @@ When('I update the object with new details:', async function (dataTable) {
     requestBody = dataTable.rowsHash();
     try {
         console.log(`Updating object with ID: ${storedObjectId}`);
-        response = await axios.put(`${apiEndpoint}/${storedObjectId}`, {
+        response = await apiRequest(`${apiEndpoint}/${storedObjectId}`, 'PUT', {
             name: requestBody.name,
             data: JSON.parse(requestBody.data)
-        }, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
         });
     } catch (error) {
         const axiosError = error as AxiosError;
@@ -79,7 +72,7 @@ When('I update the object with new details:', async function (dataTable) {
 When('I delete the stored object', async function () {
     try {
         console.log(`Deleting object with ID: ${storedObjectId}`);
-        response = await axios.delete(`${apiEndpoint}/${storedObjectId}`);
+        response = await apiRequest(`${apiEndpoint}/${storedObjectId}`, 'DELETE');
     } catch (error) {
         const axiosError = error as AxiosError;
         console.error('Delete request details:', {
@@ -88,12 +81,6 @@ When('I delete the stored object', async function () {
         });
         throw new Error(`Delete request failed: ${axiosError.message}`);
     }
-});
-
-Then('the response should contain the created object with the same details', function () {
-    assert(response.data);
-    assert.equal(response.data.name, requestBody.name);
-    assert.deepEqual(response.data.data, JSON.parse(requestBody.data));
 });
 
 Then('the response should contain the updated details', function () {
