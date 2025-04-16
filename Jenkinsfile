@@ -17,6 +17,11 @@ pipeline {
         stage('Setup Node.js') {
             steps {
                 sh '''
+                    # Backup and remove existing .npmrc if it exists
+                    if [ -f "$HOME/.npmrc" ]; then
+                        mv "$HOME/.npmrc" "$HOME/.npmrc.backup"
+                    fi
+                    
                     # Install nvm if not already installed
                     if [ ! -d "$HOME/.nvm" ]; then
                         curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
@@ -84,6 +89,12 @@ pipeline {
 
     post {
         always {
+            sh '''
+                # Restore .npmrc if it was backed up
+                if [ -f "$HOME/.npmrc.backup" ]; then
+                    mv "$HOME/.npmrc.backup" "$HOME/.npmrc"
+                fi
+            '''
             cleanWs()
         }
         success {
