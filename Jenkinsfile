@@ -2,8 +2,9 @@ pipeline {
     agent any
     
     environment {
-        NODE_VERSION = '20.11.1'  // Specify the Node.js version you want to use
+        NODE_VERSION = '20.11.1'
         NVM_DIR = "${env.HOME}/.nvm"
+        WORKSPACE_DIR = 'rest-api-testing'
     }
 
     stages {
@@ -38,27 +39,31 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh '''
-                    # Load nvm and use the installed Node.js version
-                    export NVM_DIR="$HOME/.nvm"
-                    [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-                    nvm use ${NODE_VERSION}
-                    
-                    npm install
-                '''
+                dir(WORKSPACE_DIR) {
+                    sh '''
+                        # Load nvm and use the installed Node.js version
+                        export NVM_DIR="$HOME/.nvm"
+                        [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+                        nvm use ${NODE_VERSION}
+                        
+                        npm install
+                    '''
+                }
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh '''
-                    # Load nvm and use the installed Node.js version
-                    export NVM_DIR="$HOME/.nvm"
-                    [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-                    nvm use ${NODE_VERSION}
-                    
-                    npm run test || true
-                '''
+                dir(WORKSPACE_DIR) {
+                    sh '''
+                        # Load nvm and use the installed Node.js version
+                        export NVM_DIR="$HOME/.nvm"
+                        [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+                        nvm use ${NODE_VERSION}
+                        
+                        npm run test
+                    '''
+                }
             }
         }
 
@@ -68,7 +73,7 @@ pipeline {
                     allowMissing: false,
                     alwaysLinkToLastBuild: true,
                     keepAll: true,
-                    reportDir: 'reports/html',
+                    reportDir: "${WORKSPACE_DIR}/reports/html",
                     reportFiles: 'index.html',
                     reportName: 'Cucumber Test Report',
                     reportTitles: ''
