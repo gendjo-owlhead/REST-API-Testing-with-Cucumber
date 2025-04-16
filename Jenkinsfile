@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'node:20-alpine'  // Using lightweight Alpine-based Node.js image
-            args '-v $HOME/.npm:/root/.npm'  // Cache npm packages
-        }
-    }
+    agent any
 
     stages {
         stage('Checkout') {
@@ -13,15 +8,30 @@ pipeline {
             }
         }
 
+        stage('Setup Node.js') {
+            steps {
+                script {
+                    def nodeHome = tool name: 'NodeJS', type: 'jenkins.plugins.nodejs.tools.NodeJSInstallation'
+                    env.PATH = "${nodeHome}/bin:${env.PATH}"
+                }
+            }
+        }
+
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                sh '''
+                    node -v
+                    npm -v
+                    npm install
+                '''
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh 'npm test'
+                wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'xterm']) {
+                    sh 'npm test'
+                }
             }
         }
 
@@ -42,7 +52,12 @@ pipeline {
 
     post {
         always {
-            cleanWs()
+            script {
+                // Only clean workspace if we're running on a node
+                if (env.NODE_NAME != null) {
+                    cleanWs()
+                }
+            }
         }
         success {
             echo 'Tests completed successfully!'
