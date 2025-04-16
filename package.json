@@ -1,0 +1,23 @@
+{
+  "name": "rest-api-testing",
+  "version": "1.0.0",
+  "description": "A project for testing REST APIs using Cucumber and Gherkin syntax.",
+  "main": "index.js",
+  "scripts": {
+    "pretest": "rm -rf reports && mkdir -p reports/json",
+    "test": "cucumber-js --format json:reports/json/cucumber-report.json --format summary --require-module ts-node/register --require 'src/features/step_definitions/**/*.ts' 'src/features/**/*.feature'",
+    "posttest": "ts-node src/reports/generate-report.ts && open reports/html/index.html"
+  },
+  "dependencies": {
+    "@cucumber/cucumber": "^9.5.1",
+    "axios": "^1.6.0",
+    "typescript": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "multiple-cucumber-html-reporter": "^3.5.0",
+    "ts-node": "^10.9.0"
+  },
+  "author": "Your Name",
+  "license": "MIT"
+}
