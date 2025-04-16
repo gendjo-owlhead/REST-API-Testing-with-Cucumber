@@ -3,6 +3,7 @@ pipeline {
     
     environment {
         NODE_VERSION = '20.11.1'  // Specify the Node.js version you want to use
+        PATH = "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:${env.PATH}"
     }
 
     stages {
@@ -15,9 +16,16 @@ pipeline {
         stage('Setup Node.js') {
             steps {
                 sh '''
-                    # Install Node.js using the NodeSource installation script
-                    curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-                    sudo apt-get install -y nodejs
+                    # Check if Homebrew is installed
+                    which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+                    
+                    # Update Homebrew and install Node.js
+                    brew update
+                    brew install node@20 || brew upgrade node@20
+                    
+                    # Add node to PATH if needed
+                    echo 'export PATH="/usr/local/opt/node@20/bin:$PATH"' >> ~/.bash_profile
+                    source ~/.bash_profile
                     
                     # Verify installation
                     node -v
