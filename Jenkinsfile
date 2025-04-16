@@ -1,5 +1,9 @@
 pipeline {
     agent any
+    
+    environment {
+        NODE_VERSION = '20.11.1'  // Specify the Node.js version you want to use
+    }
 
     stages {
         stage('Checkout') {
@@ -8,12 +12,22 @@ pipeline {
             }
         }
 
-        stage('Setup') {
+        stage('Setup Node.js') {
             steps {
                 sh '''
+                    # Install Node.js using the NodeSource installation script
+                    curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+                    sudo apt-get install -y nodejs
+                    
+                    # Verify installation
                     node -v
                     npm -v
                 '''
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
                 sh 'npm install'
             }
         }
