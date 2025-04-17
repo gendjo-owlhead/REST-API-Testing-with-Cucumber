@@ -38,7 +38,7 @@ pipeline {
                     allowMissing: false,
                     alwaysLinkToLastBuild: true,
                     keepAll: true,
-                    reportDir: "${WORKSPACE_DIR}/reports/html",
+                    reportDir: "reports/html",
                     reportFiles: 'index.html',
                     reportName: 'Cucumber Test Report',
                     reportTitles: ''
