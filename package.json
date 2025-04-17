@@ -6,7 +6,7 @@
   "scripts": {
     "pretest": "rm -rf reports && mkdir -p reports/json",
     "test": "cucumber-js --format json:reports/json/cucumber-report.json --format summary --require-module ts-node/register --require tsconfig-paths/register --require \"src/features/step_definitions/**/*.ts\" \"src/features/**/*.feature\"",
-    "posttest": "TS_NODE_PROJECT=./tsconfig.json ts-node --require tsconfig-paths/register src/reports/generate-report.ts"
+    "posttest": "NODE_PATH=. TS_NODE_PROJECT=./tsconfig.json ts-node -r tsconfig-paths/register ./src/reports/generate-report.ts"
   },
   "dependencies": {
     "@cucumber/cucumber": "^9.5.1",
