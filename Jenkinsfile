@@ -1,9 +1,11 @@
 pipeline {
     agent any
     
+    tools {
+        nodejs "NodeJS 23"
+    }
+
     environment {
-        NODE_VERSION = '20.11.1'
-        NVM_DIR = "${env.HOME}/.nvm"
         WORKSPACE_DIR = 'rest-api-testing'
     }
 
@@ -14,45 +16,10 @@ pipeline {
             }
         }
 
-        stage('Setup Node.js') {
-            steps {
-                sh '''
-                    # Backup and remove existing .npmrc if it exists
-                    if [ -f "$HOME/.npmrc" ]; then
-                        mv "$HOME/.npmrc" "$HOME/.npmrc.backup"
-                    fi
-                    
-                    # Install nvm if not already installed
-                    if [ ! -d "$HOME/.nvm" ]; then
-                        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-                    fi
-                    
-                    # Load nvm
-                    export NVM_DIR="$HOME/.nvm"
-                    [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-                    
-                    # Install Node.js
-                    nvm install ${NODE_VERSION}
-                    nvm use ${NODE_VERSION}
-                    
-                    # Verify installation
-                    node -v
-                    npm -v
-                '''
-            }
-        }
-
         stage('Install Dependencies') {
             steps {
                 dir(WORKSPACE_DIR) {
-                    sh '''
-                        # Load nvm and use the installed Node.js version
-                        export NVM_DIR="$HOME/.nvm"
-                        [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-                        nvm use ${NODE_VERSION}
-                        
-                        npm install
-                    '''
+                    sh 'npm install'
                 }
             }
         }
@@ -60,14 +27,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 dir(WORKSPACE_DIR) {
-                    sh '''
-                        # Load nvm and use the installed Node.js version
-                        export NVM_DIR="$HOME/.nvm"
-                        [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-                        nvm use ${NODE_VERSION}
-                        
-                        npm run test
-                    '''
+                    sh 'npm test'
                 }
             }
         }
@@ -89,12 +49,6 @@ pipeline {
 
     post {
         always {
-            sh '''
-                # Restore .npmrc if it was backed up
-                if [ -f "$HOME/.npmrc.backup" ]; then
-                    mv "$HOME/.npmrc.backup" "$HOME/.npmrc"
-                fi
-            '''
             cleanWs()
         }
         success {
