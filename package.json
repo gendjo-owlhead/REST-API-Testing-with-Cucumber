@@ -4,7 +4,7 @@
   "description": "A project for testing REST APIs using Cucumber and Gherkin syntax.",
   "main": "index.js",
   "scripts": {
-    "pretest": "rm -rf reports && mkdir -p reports/json",
+    "pretest": "rm -rf reports/json/* reports/html/* 2>/dev/null || true && mkdir -p reports/json reports/html",
     "test": "cucumber-js",
     "posttest": "NODE_PATH=. TS_NODE_PROJECT=./tsconfig.json ts-node -r tsconfig-paths/register src/reports/generate-report.ts"
   },
