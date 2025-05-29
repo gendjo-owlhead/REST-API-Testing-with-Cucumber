@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  rest-api-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rest-api-testing
+    volumes:
+      # Mount reports directory to persist test results
+      - ./reports:/app/reports
+    environment:
+      - NODE_ENV=test
+      - TZ=UTC
+    networks:
+      - test-network
+    # Remove container after execution
+    restart: "no"
+
+networks:
+  test-network:
+    driver: bridge

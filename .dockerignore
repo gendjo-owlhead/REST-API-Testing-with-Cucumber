@@ -1,0 +1,105 @@
+# Include any files or directories that you don't want to be copied to your
+# container here (e.g., local build artifacts, temporary files, etc.).
+#
+# For more help, visit the .dockerignore file reference guide at
+# https://docs.docker.com/engine/reference/builder/#dockerignore-file
+
+**/.DS_Store
+**/__pycache__
+**/.venv
+**/.classpath
+**/.dockerignore
+**/.env
+**/.git
+**/.gitignore
+**/.project
+**/.settings
+**/.toolstarget
+**/.vs
+**/.vscode
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Thumbs.db.DS_Store# OS.idea/.vscode/# IDEREADME.md# Documentation.gitignore.git# Gitreports/# Reports (will be generated fresh).vscode-test# Stores VSCode versions used for testing VSCode extensions.parcel-cache.cache# parcel-bundler cache (https://parceljs.org/).env.test.env# dotenv environment variables file.yarn-integrity# Yarn Integrity file*.tgz# Output of 'npm pack'.node_repl_history# Optional REPL history.rts2_cache_umd/.rts2_cache_es/.rts2_cache_cjs/.rpt2_cache/# Microbundle cache.eslintcache# Optional eslint cache.npm# Optional npm cache directoryjspm_packages/**/*.*proj.user
+**/*.dbmdl
+**/*.jfm
+**/bin
+**/charts
+**/docker-compose*
+**/compose*
+**/Dockerfile*
+**/node_modules
+**/npm-debug.log
+**/obj
+**/secrets.dev.yaml
+**/values.dev.yaml
+LICENSE
+README.md
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage
+*.lcov
+
+# nyc test coverage
+.nyc_output
+
+# Dependency directories
